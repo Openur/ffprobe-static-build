@@ -50,6 +50,7 @@ esac
 
 brew install meson nasm
 
+build_libbluray "$ARCHITECTURE"
 build_dav1d "$ARCHITECTURE"
 
 cd ../../ffmpeg-src
