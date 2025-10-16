@@ -25,7 +25,7 @@ FFMPEG_CONFIGURE_ARGS+=(
 case "$ARCHITECTURE" in
   arm)
     FFMPEG_CONFIGURE_ARGS+=(
-      --ld="arm-linux-gnueabihf-g++-10"
+      --ld="arm-linux-gnueabihf-g++-12"
       --arch=armhf
       --enable-cross-compile
       --cross-prefix=arm-linux-gnueabihf-
@@ -33,7 +33,7 @@ case "$ARCHITECTURE" in
     ;;
   arm64)
     FFMPEG_CONFIGURE_ARGS+=(
-      --ld="aarch64-linux-gnu-g++-10"
+      --ld="aarch64-linux-gnu-g++-12"
       --arch=aarch64
       --enable-cross-compile
       --cross-prefix=aarch64-linux-gnu-
@@ -41,7 +41,7 @@ case "$ARCHITECTURE" in
     ;;
   x64)
     FFMPEG_CONFIGURE_ARGS+=(
-      --ld="g++-10"
+      --ld="g++-12"
       --arch=x86_64
     )
     ;;
@@ -51,6 +51,7 @@ case "$ARCHITECTURE" in
     ;;
 esac
 
+build_libbluray "$ARCHITECTURE"
 build_dav1d "$ARCHITECTURE"
 
 cd ../../ffmpeg-src

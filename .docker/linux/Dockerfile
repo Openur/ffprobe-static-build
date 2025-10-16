@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/debian:bullseye
+FROM docker.io/library/debian:bookworm
 
 ARG DEBIAN_FRONTEND=noninteractive
 
