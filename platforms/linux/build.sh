@@ -52,6 +52,7 @@ case "$ARCHITECTURE" in
     ;;
 esac
 
+build_libbluray "$ARCHITECTURE"
 build_dav1d "$ARCHITECTURE"
 
 cd ../../ffmpeg-src
