@@ -75,6 +75,11 @@ jobs:
           ref: ${{ env.FFMPEG_VERSION }}
           path: ffmpeg-src
 
+      - name: Apply patches
+        working-directory: ffmpeg-src
+        run: |
+          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
+
       - name: Build
         uses: docker://ghcr.io/openur/ffmpeg-builder:linux
         with:
@@ -118,6 +123,11 @@ jobs:
           ref: ${{ env.FFMPEG_VERSION }}
           path: ffmpeg-src
 
+      - name: Apply patches
+        working-directory: ffmpeg-src
+        run: |
+          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
+
       - name: Build
         uses: docker://ghcr.io/openur/ffmpeg-builder:windows
         with:
@@ -156,6 +166,12 @@ jobs:
           repository: ffmpeg/ffmpeg
           ref: ${{ env.FFMPEG_VERSION }}
           path: ffmpeg-src
+
+      - name: Apply patches
+        working-directory: ffmpeg-src
+        if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
+        run: |
+          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
 
       - name: Build
         uses: vmactions/freebsd-vm@0cd283ca698d48b59cda444a9948f48a30709627 # v1.2.8
@@ -207,6 +223,11 @@ jobs:
           repository: ffmpeg/ffmpeg
           ref: ${{ env.FFMPEG_VERSION }}
           path: ffmpeg-src
+
+      - name: Apply patches
+        working-directory: ffmpeg-src
+        run: |
+          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
 
       - name: Build
         shell: bash
