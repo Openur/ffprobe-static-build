@@ -1,0 +1,72 @@
+:100644 100644 04432b6 0000000 M	libavcodec/h2645_sei.c
+:100644 100644 f2ad714 0000000 M	libavcodec/h2645_sei.h
+:100644 100644 b1cf0f8 0000000 M	libavcodec/h264dec.c
+:100644 100644 8a845f5 0000000 M	libavcodec/hevc/hevcdec.c
+
+diff --git a/libavcodec/h2645_sei.c b/libavcodec/h2645_sei.c
+index 04432b6..8c69953 100644
+--- a/libavcodec/h2645_sei.c
++++ b/libavcodec/h2645_sei.c
+@@ -269,6 +269,17 @@ static int decode_unregistered_user_data(H2645SEIUnregistered *h,
+         return AVERROR(ENOMEM);
+     user_data = buf_ref->data;
+ 
++    if (IS_HEVC(codec_id)) {
++        const uint64_t id = bytestream2_get_be64u(gb);
++        bytestream2_skipu(gb, 8);
++        av_log(NULL, AV_LOG_TRACE, "id: %" PRIx64 "\n", id);
++
++        if (id == 0x2ca2de09b51747db) {
++            av_log(NULL, AV_LOG_DEBUG, "x265 detected\n");
++            h->is_x265 = 1;
++        }
++    }
++
+     bytestream2_get_bufferu(gb, user_data, size);
+     user_data[size] = 0;
+     buf_ref->size = size;
+diff --git a/libavcodec/h2645_sei.h b/libavcodec/h2645_sei.h
+index f2ad714..428d5d9 100644
+--- a/libavcodec/h2645_sei.h
++++ b/libavcodec/h2645_sei.h
+@@ -58,6 +58,7 @@ typedef struct H2645SEIUnregistered {
+     AVBufferRef **buf_ref;
+     unsigned nb_buf_ref;
+     int x264_build;           //< H.264 only
++    int is_x265;              //< H.265 only
+ } H2645SEIUnregistered;
+ 
+ typedef struct H2645SEIFramePacking {
+diff --git a/libavcodec/h264dec.c b/libavcodec/h264dec.c
+index b1cf0f8..7376cde 100644
+--- a/libavcodec/h264dec.c
++++ b/libavcodec/h264dec.c
+@@ -693,6 +693,12 @@ static int decode_nal_units(H264Context *h, AVBufferRef *buf_ref,
+             h->has_recovery_point = h->has_recovery_point || h->sei.recovery_point.recovery_frame_cnt != -1;
+             if (avctx->debug & FF_DEBUG_GREEN_MD)
+                 debug_green_metadata(&h->sei.green_metadata, h->avctx);
++
++            if (h->sei.common.unregistered.x264_build > 0 && avctx->codec_tag == 0) {
++                av_log(avctx, AV_LOG_DEBUG, "Detected x264 (build %d) via SEI\n", h->sei.common.unregistered.x264_build);
++                avctx->codec_tag = MKTAG('x', '2', '6', '4');
++            }
++
+             if (ret < 0 && (h->avctx->err_recognition & AV_EF_EXPLODE))
+                 goto end;
+             break;
+diff --git a/libavcodec/hevc/hevcdec.c b/libavcodec/hevc/hevcdec.c
+index 8a845f5..65ec9dd 100644
+--- a/libavcodec/hevc/hevcdec.c
++++ b/libavcodec/hevc/hevcdec.c
+@@ -4184,6 +4184,11 @@ static av_cold int hevc_decode_init(AVCodecContext *avctx)
+             s->dovi_ctx.cfg = *(AVDOVIDecoderConfigurationRecord *) sd->data;
+     }
+ 
++    if (s->sei.common.unregistered.is_x265 && avctx->codec_tag == 0) {
++        av_log(avctx, AV_LOG_DEBUG, "Detected x264 via SEI\n");
++        avctx->codec_tag = MKTAG('x', '2', '6', '5');
++    }
++
+     return 0;
+ }
+ 
