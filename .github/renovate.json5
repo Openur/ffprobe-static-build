@@ -107,6 +107,10 @@
       labels: ["type/patch"]
     },
     {
+      matchUpdateTypes: ["digest"],
+      labels: ["type/digest"],
+    },
+    {
       matchManagers: ["github-actions"],
       addLabels: ["renovate/github-action"]
     },
