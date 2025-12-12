@@ -99,7 +99,7 @@ jobs:
         run: mkdir -p build/linux-${{ matrix.architecture }} && cp platforms/linux/build/opt/ffmpeg/bin/ffprobe build/linux-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: build-linux-${{ matrix.architecture }}
           path: build
@@ -142,7 +142,7 @@ jobs:
         run: mkdir -p build/win-${{ matrix.architecture }} && cp platforms/windows/build/opt/ffmpeg/bin/ffprobe.exe build/win-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: build-win-${{ matrix.architecture }}
           path: build
@@ -201,7 +201,7 @@ jobs:
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
         with:
           name: build-freebsd-${{ matrix.architecture }}
@@ -251,7 +251,7 @@ jobs:
         run: mkdir -p build/osx-${{ matrix.architecture }} && cp platforms/osx/build/opt/ffmpeg/bin/ffprobe build/osx-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: build-osx-${{ matrix.architecture }}
           path: build
@@ -279,7 +279,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Download artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           pattern: build-*
           path: build
@@ -293,7 +293,7 @@ jobs:
         run: dotnet pack -c Release -v detailed -p:Version=${{ needs.prepare.outputs.semver }}.${{ github.run_number }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: packages
           path: artifacts/package/release/Openur.FFprobeStatic.*.nupkg
@@ -309,13 +309,13 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main' && inputs.build_freebsd_arm
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: packages
           path: packages
 
       - name: Download artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           pattern: build-*
           path: build
@@ -355,7 +355,7 @@ jobs:
       packages: write
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: packages
           path: packages
