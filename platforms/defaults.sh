@@ -48,4 +48,4 @@ export DAV1D_MESON_ARGS=(
 )
 
 # renovate: datasource=gitlab-releases depName=videolan/dav1d versioning=semver registryUrl=https://code.videolan.org
-export DAV1D_VERSION=1.5.2
+export DAV1D_VERSION=1.5.3
