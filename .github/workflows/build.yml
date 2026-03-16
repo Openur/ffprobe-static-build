@@ -177,7 +177,7 @@ jobs:
           git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
 
       - name: Build
-        uses: vmactions/freebsd-vm@c9f815bc7aa0d34c9fdd0619b034a32d6ca7b57e # v1.4.2
+        uses: vmactions/freebsd-vm@4807432c7cab1c3f97688665332c0b932062d31f # v1.4.3
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
         with:
           release: 14.3
