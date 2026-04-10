@@ -99,7 +99,7 @@ jobs:
         run: mkdir -p build/linux-${{ matrix.architecture }} && cp platforms/linux/build/opt/ffmpeg/bin/ffprobe build/linux-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: build-linux-${{ matrix.architecture }}
           path: build
@@ -142,7 +142,7 @@ jobs:
         run: mkdir -p build/win-${{ matrix.architecture }} && cp platforms/windows/build/opt/ffmpeg/bin/ffprobe.exe build/win-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: build-win-${{ matrix.architecture }}
           path: build
@@ -201,7 +201,7 @@ jobs:
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
         with:
           name: build-freebsd-${{ matrix.architecture }}
@@ -251,7 +251,7 @@ jobs:
         run: mkdir -p build/osx-${{ matrix.architecture }} && cp platforms/osx/build/opt/ffmpeg/bin/ffprobe build/osx-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: build-osx-${{ matrix.architecture }}
           path: build
@@ -293,7 +293,7 @@ jobs:
         run: dotnet pack -c Release -v detailed -p:Version=${{ needs.prepare.outputs.semver }}.${{ github.run_number }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: packages
           path: artifacts/package/release/Openur.FFprobeStatic.*.nupkg
