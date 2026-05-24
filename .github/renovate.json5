@@ -7,7 +7,7 @@
     ":semanticCommits"
   ],
   dependencyDashboardTitle: "Renovate Dashboard",
-  minimumReleaseAge: "3 day",
+  minimumReleaseAge: "2 day",
   schedule: [
     "* * * * *"
   ],
@@ -47,8 +47,16 @@
       matchPackageNames: [
         "/^actions\//",
       ],
-      matchDepTypes: [
-        "action"
+      group: {
+        commitMessageTopic: "{{{groupName}}} group"
+      }
+    },
+    {
+      description: "Docker Actions Group",
+      groupName: "docker-actions",
+      matchManagers: ["github-actions"],
+      matchPackageNames: [
+        "/^docker\//",
       ],
       group: {
         commitMessageTopic: "{{{groupName}}} group"
