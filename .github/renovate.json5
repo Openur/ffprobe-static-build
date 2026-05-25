@@ -15,6 +15,9 @@
     "prEditedNotification",
     "prIgnoreNotification"
   ],
+  registryAliases: {
+    "mirror.gcr.io": "docker.io",
+  },
   customManagers: [
     {
       customType: "regex",
@@ -130,7 +133,7 @@
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["/debian/"],
-      allowedVersions: "==11",
+      allowedVersions: "==13",
     },
   ]
 }
