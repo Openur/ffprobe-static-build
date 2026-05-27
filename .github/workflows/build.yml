@@ -352,6 +352,7 @@ jobs:
     needs: release
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       packages: write
     steps:
       - name: Download artifacts
@@ -370,6 +371,12 @@ jobs:
           --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
           --api-key ${{ secrets.GITHUB_TOKEN }}
 
+      - name: NuGet login
+        uses: nuget/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        id: nuget-login
+        with:
+          user: Openur
+
       - name: Push to NuGet
         shell: bash
         run: >-
@@ -378,4 +385,4 @@ jobs:
           --no-symbols
           --skip-duplicate
           --source https://api.nuget.org/v3/index.json
-          --api-key ${{ secrets.NUGET_API_KEY }}
+          --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}"
