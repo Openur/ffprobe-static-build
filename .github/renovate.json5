@@ -7,7 +7,7 @@
     ":semanticCommits"
   ],
   dependencyDashboardTitle: "Renovate Dashboard",
-  minimumReleaseAge: "2 day",
+  minimumReleaseAge: "1 day",
   schedule: [
     "* * * * *"
   ],
