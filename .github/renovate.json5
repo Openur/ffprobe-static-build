@@ -7,7 +7,6 @@
     ":semanticCommits"
   ],
   dependencyDashboardTitle: "Renovate Dashboard",
-  minimumReleaseAge: "1 day",
   schedule: [
     "* * * * *"
   ],
@@ -51,8 +50,8 @@
         "/^actions\//",
       ],
       group: {
-        commitMessageTopic: "{{{groupName}}} group"
-      }
+        commitMessageTopic: "{{{groupName}}} group",
+      },
     },
     {
       description: "Docker Actions Group",
@@ -62,8 +61,8 @@
         "/^docker\//",
       ],
       group: {
-        commitMessageTopic: "{{{groupName}}} group"
-      }
+        commitMessageTopic: "{{{groupName}}} group",
+      },
     },
     {
       description: "Auto-merge trusted GitHub Actions",
@@ -81,54 +80,63 @@
       matchUpdateTypes: ["major"],
       semanticCommitType: "feat",
       commitMessagePrefix: "{{semanticCommitType}}({{semanticCommitScope}})!:",
-      commitMessageExtra: "( {{currentVersion}} ➔ {{newVersion}} )"
+      commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
     },
     {
       matchUpdateTypes: ["minor"],
       semanticCommitType: "feat",
-      commitMessageExtra: "( {{currentVersion}} ➔ {{newVersion}} )"
+      commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
     },
     {
       matchUpdateTypes: ["patch"],
       semanticCommitType: "fix",
-      commitMessageExtra: "( {{currentVersion}} ➔ {{newVersion}} )"
+      commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
     },
     {
       matchUpdateTypes: ["digest"],
-      semanticCommitType: "chore",
-      commitMessageExtra: "( {{currentDigestShort}} ➔ {{newDigestShort}} )"
+      semanticCommitType: "fix",
+      commitMessageExtra: "({{currentDigestShort}} ➔ {{newDigestShort}})",
+    },
+    {
+      matchDatasources: ["docker"],
+      semanticCommitScope: "container",
+      commitMessageTopic: "image {{depName}}",
     },
     {
       matchManagers: ["github-actions"],
       semanticCommitType: "ci",
       semanticCommitScope: "github-action",
-      commitMessageTopic: "action {{depName}}"
+      commitMessageTopic: "action {{depName}}",
     },
     {
       matchUpdateTypes: ["major"],
-      labels: ["type/major"]
+      addLabels: ["type/major"],
     },
     {
       matchUpdateTypes: ["minor"],
-      labels: ["type/minor"]
+      addLabels: ["type/minor"],
     },
     {
       matchUpdateTypes: ["patch"],
-      labels: ["type/patch"]
+      addLabels: ["type/patch"],
     },
     {
       matchUpdateTypes: ["digest"],
-      labels: ["type/digest"],
+      addLabels: ["type/digest"],
+    },
+    {
+      matchDatasources: ["docker"],
+      addLabels: ["renovate/container"],
     },
     {
       matchManagers: ["github-actions"],
-      addLabels: ["renovate/github-action"]
+      addLabels: ["renovate/github-action"],
     },
     {
       description: "Custom versioning for FFmpeg/FFmpeg",
       matchDatasources: ["github-tags"],
       matchPackageNames: ["ffmpeg/ffmpeg"],
-      versioning: "regex:^n(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?$"
+      versioning: "regex:^n(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?$",
     },
     {
       matchDatasources: ["docker"],
