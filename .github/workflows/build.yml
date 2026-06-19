@@ -180,7 +180,7 @@ jobs:
         uses: vmactions/freebsd-vm@bac9cda6a14057f08e3793f6a5e037292b59868f # v1.4.7
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
         with:
-          release: 14.3
+          release: 14.4
           usesh: true
           arch: ${{ matrix.architecture == 'arm64' && 'aarch64' || 'x86_64' }}
           prepare: |
