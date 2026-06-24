@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM mirror.gcr.io/debian:13@sha256:1de1fcf32a035452eb3a2c99926a9988509f177b3c99efab609700297d2076bf
+FROM mirror.gcr.io/debian:13@sha256:d07d1b51c39f51188e60be9b64e6bf769fa94e187f092bc32b91305cfa34ba5a
 
 ARG DEBIAN_FRONTEND=noninteractive
 
