@@ -2,7 +2,8 @@
 
 set -ex
 
-ARCHITECTURE=$1
+readonly ARCHITECTURE=$1
+readonly LINUX_COMPILER_SUFFIX=${LINUX_COMPILER_SUFFIX:--14}
 
 cd "$(dirname "$0")"
 
@@ -25,7 +26,7 @@ FFMPEG_CONFIGURE_ARGS+=(
 case "$ARCHITECTURE" in
   arm)
     FFMPEG_CONFIGURE_ARGS+=(
-      --ld="arm-linux-gnueabihf-g++-14"
+      --ld="arm-linux-gnueabihf-g++${LINUX_COMPILER_SUFFIX}"
       --arch=armhf
       --enable-cross-compile
       --cross-prefix=arm-linux-gnueabihf-
@@ -33,7 +34,7 @@ case "$ARCHITECTURE" in
     ;;
   arm64)
     FFMPEG_CONFIGURE_ARGS+=(
-      --ld="aarch64-linux-gnu-g++-14"
+      --ld="aarch64-linux-gnu-g++${LINUX_COMPILER_SUFFIX}"
       --arch=aarch64
       --enable-cross-compile
       --cross-prefix=aarch64-linux-gnu-
@@ -41,7 +42,7 @@ case "$ARCHITECTURE" in
     ;;
   x64)
     FFMPEG_CONFIGURE_ARGS+=(
-      --ld="g++-14"
+      --ld="g++${LINUX_COMPILER_SUFFIX}"
       --arch=x86_64
     )
     ;;
