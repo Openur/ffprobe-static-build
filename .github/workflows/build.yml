@@ -209,7 +209,7 @@ jobs:
           if-no-files-found: error
 
   build_mac:
-    runs-on: macos-15
+    runs-on: macos-26
     strategy:
       fail-fast: false
       matrix:
