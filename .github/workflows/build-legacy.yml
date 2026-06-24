@@ -69,7 +69,7 @@ jobs:
           path: ffmpeg-src
 
       - name: Build
-        uses: docker://mirror.gcr.io/debian:11
+        uses: docker://mirror.gcr.io/debian:12
         env:
           LINUX_COMPILER_SUFFIX: "-10"
         with:
