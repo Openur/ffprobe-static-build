@@ -242,6 +242,7 @@ jobs:
 
       - name: Display build information
         run: |
+          otool -L platforms/osx/build/opt/ffmpeg/bin/ffprobe
           otool -l platforms/osx/build/opt/ffmpeg/bin/ffprobe
           platforms/osx/build/opt/ffmpeg/bin/ffprobe -hide_banner -version
           platforms/osx/build/opt/ffmpeg/bin/ffprobe -hide_banner -buildconf
