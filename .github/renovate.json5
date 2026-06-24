@@ -143,5 +143,11 @@
       matchPackageNames: ["/debian/"],
       allowedVersions: "==13",
     },
+    {
+      matchDatasources: ["docker"],
+      matchFileNames: [".github/workflows/build-legacy.yml"],
+      matchPackageNames: ["/debian/"],
+      allowedVersions: "==11",
+    },
   ]
 }
