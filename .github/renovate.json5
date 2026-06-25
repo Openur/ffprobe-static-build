@@ -149,5 +149,18 @@
       matchPackageNames: ["/debian/"],
       allowedVersions: "==11",
     },
+    {
+      matchDatasources: ["github-runners"],
+      matchDepTypes: ["github-runner"],
+      matchPackageNames: ["macos"],
+      allowedVersions: "==15",
+    },
+    {
+      matchDatasources: ["github-runners"],
+      matchFileNames: [".github/workflows/build-legacy.yml"],
+      matchDepTypes: ["github-runner"],
+      matchPackageNames: ["macos"],
+      allowedVersions: "==14",
+    },
   ]
 }
