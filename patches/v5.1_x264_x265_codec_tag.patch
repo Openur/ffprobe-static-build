@@ -1,0 +1,98 @@
+From 8ee5f17377b4af0f89cc70af861b8b5551f1415c Mon Sep 17 00:00:00 2001
+From: ta264 <ta264@users.noreply.github.com>
+Date: Sat, 11 Sep 2021 08:31:55 +0100
+Subject: [PATCH] Set x264/x265 in codec tag
+
+---
+ libavcodec/h264dec.c  |  5 +++++
+ libavcodec/hevc_sei.c | 14 ++++++++++++++
+ libavcodec/hevc_sei.h |  1 +
+ libavcodec/hevcdec.c  |  3 +++
+ 4 files changed, 23 insertions(+)
+
+diff --git a/libavcodec/h264dec.c b/libavcodec/h264dec.c
+index 2a5b53ea56677..048208527c08e 100644
+--- a/libavcodec/h264dec.c
++++ b/libavcodec/h264dec.c
+@@ -677,6 +677,11 @@ static int decode_nal_units(H264Context *h, const uint8_t *buf, int buf_size)
+                 break;
+             }
+             ret = ff_h264_sei_decode(&h->sei, &nal->gb, &h->ps, avctx);
++            av_log(avctx, AV_LOG_DEBUG, "build number 2 %d\n", h->sei.unregistered.x264_build);
++            if (h->sei.unregistered.x264_build > 0) {
++                avctx->codec_tag = MKTAG('x', '2', '6', '4');
++            }
++            
+             h->has_recovery_point = h->has_recovery_point || h->sei.recovery_point.recovery_frame_cnt != -1;
+             if (avctx->debug & FF_DEBUG_GREEN_MD)
+                 debug_green_metadata(&h->sei.green_metadata, h->avctx);
+diff --git a/libavcodec/hevc_sei.c b/libavcodec/hevc_sei.c
+index 631373e06f80f..51810acf1e31e 100644
+--- a/libavcodec/hevc_sei.c
++++ b/libavcodec/hevc_sei.c
+@@ -22,6 +22,7 @@
+  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+  */
+ 
++#include <inttypes.h>
+ #include "atsc_a53.h"
+ #include "bytestream.h"
+ #include "dynamic_hdr10_plus.h"
+@@ -179,6 +180,7 @@ static int decode_nal_sei_user_data_unregistered(HEVCSEIUnregistered *s,
+ {
+     AVBufferRef *buf_ref, **tmp;
+     int size = bytestream2_get_bytes_left(gb);
++    uint64_t id;
+ 
+     if (size < 16 || size >= INT_MAX - 1)
+        return AVERROR_INVALIDDATA;
+@@ -192,11 +194,23 @@ static int decode_nal_sei_user_data_unregistered(HEVCSEIUnregistered *s,
+     if (!buf_ref)
+         return AVERROR(ENOMEM);
+ 
++    id = bytestream2_get_be64u(gb);
++    bytestream2_skipu(gb, 8);
++
++    av_log(NULL, AV_LOG_DEBUG, "id: %" PRIx64 "\n", id);
++
++    if (id == 0x2ca2de09b51747db) {
++      av_log(NULL, AV_LOG_DEBUG, "x265 detected\n");
++      s->is_x265 = 1;
++    }
++
+     bytestream2_get_bufferu(gb, buf_ref->data, size);
+     buf_ref->data[size] = 0;
+     buf_ref->size = size;
+     s->buf_ref[s->nb_buf_ref++] = buf_ref;
+ 
++    av_log(NULL, AV_LOG_DEBUG, "unregistered data: %s\n", buf_ref->data);
++
+     return 0;
+ }
+ 
+diff --git a/libavcodec/hevc_sei.h b/libavcodec/hevc_sei.h
+index ef987f67818de..24f47c3dbabd0 100644
+--- a/libavcodec/hevc_sei.h
++++ b/libavcodec/hevc_sei.h
+@@ -65,6 +65,7 @@ typedef struct HEVCSEIA53Caption {
+ typedef struct HEVCSEIUnregistered {
+     AVBufferRef **buf_ref;
+     int nb_buf_ref;
++    int is_x265;
+ } HEVCSEIUnregistered;
+ 
+ typedef struct HEVCSEIMasteringDisplay {
+diff --git a/libavcodec/hevcdec.c b/libavcodec/hevcdec.c
+index 84db60a9bced3..7487292d0ad8b 100644
+--- a/libavcodec/hevcdec.c
++++ b/libavcodec/hevcdec.c
+@@ -3836,6 +3836,9 @@ static av_cold int hevc_decode_init(AVCodecContext *avctx)
+     if (!avctx->internal->is_copy) {
+         if (avctx->extradata_size > 0 && avctx->extradata) {
+             ret = hevc_decode_extradata(s, avctx->extradata, avctx->extradata_size, 1);
++            av_log(avctx, AV_LOG_DEBUG, "decoded sei, is_x265:%d\n", s->sei.unregistered.is_x265);
++            if (s->sei.unregistered.is_x265)
++              avctx->codec_tag = MKTAG('x', '2', '6', '5');
+             if (ret < 0) {
+                 return ret;
+             }

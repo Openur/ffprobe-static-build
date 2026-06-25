@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FFMPEG_VERSION: s5.1.10
+  FFMPEG_VERSION: n5.1.10
 
 permissions:
   contents: read
@@ -40,7 +40,7 @@ jobs:
         id: variables
         shell: bash
         run: |
-          version="${FFMPEG_VERSION#s}"
+          version="${FFMPEG_VERSION#n}"
 
           if [[ $version =~ ^[0-9]+\.[0-9]+$ ]]; then
             version="${version}.0"
@@ -64,9 +64,18 @@ jobs:
       - name: Checkout FFmpeg
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          repository: Servarr/FFmpeg
-          ref: 5.1-servarr
+          repository: ffmpeg/ffmpeg
+          ref: ${{ env.FFMPEG_VERSION }}
           path: ffmpeg-src
+
+      - name: Apply patches
+        working-directory: ffmpeg-src
+        run: |
+          git apply --stat --apply ../patches/v5.1_detect_dts_es.patch
+          git apply --stat --apply ../patches/v5.1_x264_x265_codec_tag.patch
+          git apply --stat --apply ../patches/v5.1_detect_dts_x.patch
+          git apply --stat --apply ../patches/v5.1_detect_truehd_atmos.patch
+          git apply --stat --apply ../patches/v5.1_detect_eac3_atmos.patch
 
       - name: Build
         uses: docker://mirror.gcr.io/debian:11
@@ -109,9 +118,18 @@ jobs:
       - name: Checkout FFmpeg
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          repository: Servarr/FFmpeg
-          ref: 5.1-servarr
+          repository: ffmpeg/ffmpeg
+          ref: ${{ env.FFMPEG_VERSION }}
           path: ffmpeg-src
+
+      - name: Apply patches
+        working-directory: ffmpeg-src
+        run: |
+          git apply --stat --apply ../patches/v5.1_detect_dts_es.patch
+          git apply --stat --apply ../patches/v5.1_x264_x265_codec_tag.patch
+          git apply --stat --apply ../patches/v5.1_detect_dts_x.patch
+          git apply --stat --apply ../patches/v5.1_detect_truehd_atmos.patch
+          git apply --stat --apply ../patches/v5.1_detect_eac3_atmos.patch
 
       - name: Build
         uses: docker://mirror.gcr.io/debian:11
@@ -145,9 +163,18 @@ jobs:
       - name: Checkout FFmpeg
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          repository: Servarr/FFmpeg
-          ref: 5.1-servarr
+          repository: ffmpeg/ffmpeg
+          ref: ${{ env.FFMPEG_VERSION }}
           path: ffmpeg-src
+
+      - name: Apply patches
+        working-directory: ffmpeg-src
+        run: |
+          git apply --stat --apply ../patches/v5.1_detect_dts_es.patch
+          git apply --stat --apply ../patches/v5.1_x264_x265_codec_tag.patch
+          git apply --stat --apply ../patches/v5.1_detect_dts_x.patch
+          git apply --stat --apply ../patches/v5.1_detect_truehd_atmos.patch
+          git apply --stat --apply ../patches/v5.1_detect_eac3_atmos.patch
 
       - name: Build
         uses: vmactions/freebsd-vm@b84ab5559b5a1bb4b8ee2737d2506a16e1737636 # v1.4.8
@@ -192,9 +219,18 @@ jobs:
       - name: Checkout FFmpeg
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          repository: Servarr/FFmpeg
-          ref: 5.1-servarr
+          repository: ffmpeg/ffmpeg
+          ref: ${{ env.FFMPEG_VERSION }}
           path: ffmpeg-src
+
+      - name: Apply patches
+        working-directory: ffmpeg-src
+        run: |
+          git apply --stat --apply ../patches/v5.1_detect_dts_es.patch
+          git apply --stat --apply ../patches/v5.1_x264_x265_codec_tag.patch
+          git apply --stat --apply ../patches/v5.1_detect_dts_x.patch
+          git apply --stat --apply ../patches/v5.1_detect_truehd_atmos.patch
+          git apply --stat --apply ../patches/v5.1_detect_eac3_atmos.patch
 
       - name: Build
         shell: bash

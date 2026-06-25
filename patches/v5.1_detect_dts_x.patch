@@ -1,0 +1,139 @@
+From 0264035506d3da914caeb2b4bbcb392f02d904fd Mon Sep 17 00:00:00 2001
+From: ta264 <ta264@users.noreply.github.com>
+Date: Sat, 11 Sep 2021 08:31:55 +0100
+Subject: [PATCH] Detect DTS:X
+
+---
+ libavcodec/avcodec.h       |  1 +
+ libavcodec/dca_syncwords.h |  2 ++
+ libavcodec/dca_xll.c       | 16 ++++++++++++----
+ libavcodec/dca_xll.h       |  1 +
+ libavcodec/get_bits.h      |  9 +++++++++
+ libavcodec/profiles.c      |  1 +
+ 6 files changed, 26 insertions(+), 4 deletions(-)
+
+diff --git a/libavcodec/avcodec.h b/libavcodec/avcodec.h
+index 11f5904031eac..9684fa2114800 100644
+--- a/libavcodec/avcodec.h
++++ b/libavcodec/avcodec.h
+@@ -1575,6 +1575,7 @@ typedef struct AVCodecContext {
+ #define FF_PROFILE_DTS_96_24   40
+ #define FF_PROFILE_DTS_HD_HRA  50
+ #define FF_PROFILE_DTS_HD_MA   60
++#define FF_PROFILE_DTS_X       61
+ #define FF_PROFILE_DTS_EXPRESS 70
+ 
+ #define FF_PROFILE_MPEG2_422    0
+diff --git a/libavcodec/dca_syncwords.h b/libavcodec/dca_syncwords.h
+index 4d2cd5f56d513..45523f5945af4 100644
+--- a/libavcodec/dca_syncwords.h
++++ b/libavcodec/dca_syncwords.h
+@@ -29,6 +29,8 @@
+ #define    DCA_SYNCWORD_XBR                  0x655E315EU
+ #define    DCA_SYNCWORD_LBR                  0x0A801921U
+ #define    DCA_SYNCWORD_XLL                  0x41A29547U
++#define    DCA_SYNCWORD_DTS_X                0x02000850U
++#define    DCA_SYNCWORD_DTS_X_IMAX           0xF14000D0U
+ #define    DCA_SYNCWORD_SUBSTREAM            0x64582025U
+ #define    DCA_SYNCWORD_SUBSTREAM_CORE       0x02B09261U
+ #define    DCA_SYNCWORD_REV1AUX              0x9A1105A0U
+diff --git a/libavcodec/dca_xll.c b/libavcodec/dca_xll.c
+index dfb15ec8c203e..42bfef3b8546f 100644
+--- a/libavcodec/dca_xll.c
++++ b/libavcodec/dca_xll.c
+@@ -775,6 +775,7 @@ static int chs_assemble_freq_bands(DCAXllDecoder *s, DCAXllChSet *c)
+ static int parse_common_header(DCAXllDecoder *s)
+ {
+     int stream_ver, header_size, frame_size_nbits, nframesegs_log2;
++    uint8_t *curr, *end;
+ 
+     // XLL extension sync word
+     if (get_bits_long(&s->gb, 32) != DCA_SYNCWORD_XLL) {
+@@ -1051,6 +1052,7 @@ static int parse_band_data(DCAXllDecoder *s)
+ static int parse_frame(DCAXllDecoder *s, const uint8_t *data, int size, DCAExssAsset *asset)
+ {
+     int ret;
++    unsigned int syncword;
+ 
+     if ((ret = init_get_bits8(&s->gb, data, size)) < 0)
+         return ret;
+@@ -1062,10 +1064,16 @@ static int parse_frame(DCAXllDecoder *s, const uint8_t *data, int size, DCAExssA
+         return ret;
+     if ((ret = parse_band_data(s)) < 0)
+         return ret;
+-    if (ff_dca_seek_bits(&s->gb, s->frame_size * 8)) {
+-        av_log(s->avctx, AV_LOG_ERROR, "Read past end of XLL frame\n");
+-        return AVERROR_INVALIDDATA;
++    
++    align_bits4(&s->gb);
++    if (s->frame_size * 8 > s->gb.index) {
++      syncword = get_bits_long(&s->gb, 32);
++      av_log(s->avctx, AV_LOG_DEBUG, "XLL: %zu bits left [%#x]\n", s->frame_size * 8 - s->gb.index, syncword);
++      if (syncword == DCA_SYNCWORD_DTS_X || syncword == DCA_SYNCWORD_DTS_X_IMAX || syncword - 1 == DCA_SYNCWORD_DTS_X_IMAX) {
++        s->is_dts_x = 1;
++      }
+     }
++
+     return ret;
+ }
+ 
+@@ -1439,7 +1447,7 @@ int ff_dca_xll_filter_frame(DCAXllDecoder *s, AVFrame *frame)
+     }
+ 
+     avctx->bits_per_raw_sample = p->storage_bit_res;
+-    avctx->profile = FF_PROFILE_DTS_HD_MA;
++    avctx->profile = s->is_dts_x ? FF_PROFILE_DTS_X : FF_PROFILE_DTS_HD_MA;
+     avctx->bit_rate = 0;
+ 
+     frame->nb_samples = nsamples = s->nframesamples << (s->nfreqbands - 1);
+diff --git a/libavcodec/dca_xll.h b/libavcodec/dca_xll.h
+index d7c1a13ec8651..c074f443b598d 100644
+--- a/libavcodec/dca_xll.h
++++ b/libavcodec/dca_xll.h
+@@ -128,6 +128,7 @@ typedef struct DCAXllDecoder {
+     int     nactivechsets;  ///< Number of active channel sets to decode
+ 
+     int     hd_stream_id;   ///< Previous DTS-HD stream ID for detecting changes
++    int     is_dts_x;       ///< Flag for DTS:X presence
+ 
+     uint8_t     *pbr_buffer;        ///< Peak bit rate (PBR) smoothing buffer
+     int         pbr_length;         ///< Length in bytes of data currently buffered
+diff --git a/libavcodec/get_bits.h b/libavcodec/get_bits.h
+index 992765dc92c98..c59eeed4fd119 100644
+--- a/libavcodec/get_bits.h
++++ b/libavcodec/get_bits.h
+@@ -216,6 +216,9 @@ static inline unsigned int show_bits(GetBitContext *s, int n);
+ 
+ #endif
+ 
++#define DCA_ALIGN(value, align) \
++    (((value) + (align) - 1) & ~((align) - 1))
++
+ static inline int get_bits_count(const GetBitContext *s)
+ {
+ #if CACHED_BITSTREAM_READER
+@@ -680,6 +683,12 @@ static inline int init_get_bits8_le(GetBitContext *s, const uint8_t *buffer,
+     return init_get_bits_xe(s, buffer, byte_size * 8, 1);
+ }
+ 
++static inline int align_bits4(GetBitContext *bits)
++{
++    bits->index = DCA_ALIGN(bits->index, 32);
++    return bits->index;
++}
++
+ static inline const uint8_t *align_get_bits(GetBitContext *s)
+ {
+     int n = -get_bits_count(s) & 7;
+diff --git a/libavcodec/profiles.c b/libavcodec/profiles.c
+index 7af7fbeb13026..a8e0917949d01 100644
+--- a/libavcodec/profiles.c
++++ b/libavcodec/profiles.c
+@@ -41,6 +41,7 @@ const AVProfile ff_dca_profiles[] = {
+     { FF_PROFILE_DTS_96_24,   "DTS 96/24"   },
+     { FF_PROFILE_DTS_HD_HRA,  "DTS-HD HRA"  },
+     { FF_PROFILE_DTS_HD_MA,   "DTS-HD MA"   },
++    { FF_PROFILE_DTS_X,       "DTS:X"       },
+     { FF_PROFILE_DTS_EXPRESS, "DTS Express" },
+     { FF_PROFILE_UNKNOWN },
+ };

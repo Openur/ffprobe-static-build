@@ -1,0 +1,22 @@
+From 9eecad42d64ab888b9bb366df998b5b7cac0e2bc Mon Sep 17 00:00:00 2001
+From: Qstick <qstick@gmail.com>
+Date: Thu, 27 Oct 2022 23:33:01 -0500
+Subject: [PATCH] Fixed: Detect all DTS-ES
+
+---
+ libavcodec/dca_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libavcodec/dca_core.c b/libavcodec/dca_core.c
+index 2b19807ef40c3..4cfd8247831e6 100644
+--- a/libavcodec/dca_core.c
++++ b/libavcodec/dca_core.c
+@@ -2375,7 +2375,7 @@ int ff_dca_core_filter_frame(DCACoreDecoder *s, AVFrame *frame)
+     // Set profile, bit rate, etc
+     if (s->ext_audio_mask & DCA_EXSS_MASK)
+         avctx->profile = FF_PROFILE_DTS_HD_HRA;
+-    else if (s->ext_audio_mask & (DCA_CSS_XXCH | DCA_CSS_XCH))
++    else if (s->es_format || s->ext_audio_mask & (DCA_CSS_XXCH | DCA_CSS_XCH))
+         avctx->profile = FF_PROFILE_DTS_ES;
+     else if (s->ext_audio_mask & DCA_CSS_X96)
+         avctx->profile = FF_PROFILE_DTS_96_24;

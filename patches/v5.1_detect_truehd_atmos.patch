@@ -1,0 +1,76 @@
+From d1f4ac2d43c0d234ad4803b9e76a58249a06d778 Mon Sep 17 00:00:00 2001
+From: ta264 <ta264@users.noreply.github.com>
+Date: Thu, 9 Sep 2021 21:35:11 +0100
+Subject: [PATCH] Detect TrueHD atmos
+
+---
+ libavcodec/mlp_parse.c  | 21 +++++++++++++++++++--
+ libavcodec/mlp_parse.h  |  1 +
+ libavcodec/mlp_parser.c |  3 +++
+ 3 files changed, 23 insertions(+), 2 deletions(-)
+
+diff --git a/libavcodec/mlp_parse.c b/libavcodec/mlp_parse.c
+index 45715352c28fc..4232145c8cc72 100644
+--- a/libavcodec/mlp_parse.c
++++ b/libavcodec/mlp_parse.c
+@@ -85,7 +85,7 @@ static int mlp_get_major_sync_size(const uint8_t * buf, int bufsize)
+ 
+ int ff_mlp_read_major_sync(void *log, MLPHeaderInfo *mh, GetBitContext *gb)
+ {
+-    int ratebits, channel_arrangement, header_size;
++    int ratebits, channel_arrangement, header_size, bits_read;
+     uint16_t checksum;
+ 
+     av_assert1(get_bits_count(gb) == 0);
+@@ -159,7 +159,24 @@ int ff_mlp_read_major_sync(void *log, MLPHeaderInfo *mh, GetBitContext *gb)
+ 
+     mh->num_substreams = get_bits(gb, 4);
+ 
+-    skip_bits_long(gb, 4 + (header_size - 17) * 8);
++    // reserved
++    skip_bits(gb, 2);
++
++    // extended substream info
++    skip_bits(gb, 2);
++
++    bits_read = 4;
++
++    av_log(log, AV_LOG_DEBUG, "reading extended_substream_info\n");
++    if (mh->stream_type == 0xba) {
++      // substream_info
++      av_log(log, AV_LOG_DEBUG, "reading atmos bit\n");
++      mh->has_atmos = get_bits(gb, 1);
++      av_log(log, AV_LOG_DEBUG, "value of atmos bit %d\n", mh->has_atmos);
++      bits_read++;
++    }
++
++    skip_bits_long(gb, 4 + (header_size - 17) * 8 - bits_read);
+ 
+     return 0;
+ }
+diff --git a/libavcodec/mlp_parse.h b/libavcodec/mlp_parse.h
+index f0d7b41c1194e..1661da4d3d8e1 100644
+--- a/libavcodec/mlp_parse.h
++++ b/libavcodec/mlp_parse.h
+@@ -56,6 +56,7 @@ typedef struct MLPHeaderInfo
+ 
+     int is_vbr;                             ///< Stream is VBR instead of CBR
+     int peak_bitrate;                       ///< Peak bitrate for VBR, actual bitrate (==peak) for CBR
++    int has_atmos;                         ///< Specifies if 16 channel atmos data present
+ 
+     int num_substreams;                     ///< Number of substreams within stream
+ } MLPHeaderInfo;
+diff --git a/libavcodec/mlp_parser.c b/libavcodec/mlp_parser.c
+index d391390dd5187..87d44726154a7 100644
+--- a/libavcodec/mlp_parser.c
++++ b/libavcodec/mlp_parser.c
+@@ -186,6 +186,9 @@ static int mlp_parse(AVCodecParserContext *s,
+             } else {
+                 av_channel_layout_from_mask(&avctx->ch_layout, mh.channel_layout_thd_stream2);
+             }
++            if (mh.has_atmos) {
++                avctx->codec_tag = MKTAG('t', 'h', 'd', '+');
++            }
+         }
+ 
+         if (!mh.is_vbr) /* Stream is CBR */
