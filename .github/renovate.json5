@@ -149,5 +149,11 @@
       matchPackageNames: ["/debian/"],
       allowedVersions: "==11",
     },
+    {
+      matchDatasources: ["github-runners"],
+      matchDepTypes: ["github-runner"],
+      matchPackageNames: ["macos"],
+      allowedVersions: "==15",
+    },
   ]
 }
