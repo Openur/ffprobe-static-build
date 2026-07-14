@@ -19,6 +19,7 @@ RUN apt-get update && \
       gcc-arm-linux-gnueabihf \
       g++-arm-linux-gnueabihf \
       libc6-dev-armhf-cross \
+      qemu-user \
       # libdav1d \
       meson \
       ninja-build \
