@@ -56,7 +56,7 @@ build_dav1d "$ARCHITECTURE"
 
 cd ../../ffmpeg-src
 
-PKG_CONFIG_PATH=/usr/lib/arm-linux-gnueabihf/lib/pkgconfig:/usr/lib/aarch64-linux-gnu/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig \
+PKG_CONFIG_PATH=/usr/arm-linux-gnueabihf/lib/pkgconfig:/usr/aarch64-linux-gnu/lib/pkgconfig:/usr/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig \
   ./configure "${FFMPEG_CONFIGURE_ARGS[@]}"
 
 make

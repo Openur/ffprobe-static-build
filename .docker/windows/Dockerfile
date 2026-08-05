@@ -2,10 +2,10 @@
 
 FROM mirror.gcr.io/debian:13@sha256:34cd9e9fd437c0a095ec39cb2e73422c9f30821b0d0848ed74fd0d43bae4d958
 
-ARG DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && \
-    apt-get upgrade --yes && \
+RUN export DEBIAN_FRONTEND="noninteractive"; \
+    set -eux; \
+    apt-get update; \
+    apt-get upgrade --yes; \
     apt-get install --yes --no-install-suggests --no-install-recommends \
       ca-certificates \
       wget \
@@ -18,4 +18,5 @@ RUN apt-get update && \
       # libdav1d \
       meson \
       ninja-build \
-      nasm
+      nasm; \
+    rm -rf /var/lib/apt/lists/*;

@@ -7,15 +7,15 @@ build_dav1d() {
     arm)
       DAV1D_MESON_ARGS+=(
         --cross-file="$SCRIPT_DIRECTORY/arm-linux-gnueabihf.meson"
-        --prefix=/usr/lib/arm-linux-gnueabihf
-        --libdir=/usr/lib/arm-linux-gnueabihf/lib
+        --prefix=/usr/arm-linux-gnueabihf
+        --libdir=/usr/arm-linux-gnueabihf/lib
       )
       ;;
     arm64)
       DAV1D_MESON_ARGS+=(
         --cross-file=./package/crossfiles/aarch64-linux.meson
-        --prefix=/usr/lib/aarch64-linux-gnu
-        --libdir=/usr/lib/aarch64-linux-gnu/lib
+        --prefix=/usr/aarch64-linux-gnu
+        --libdir=/usr/aarch64-linux-gnu/lib
       )
       ;;
     x64) ;;

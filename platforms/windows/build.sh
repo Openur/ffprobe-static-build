@@ -49,7 +49,7 @@ build_dav1d "$ARCHITECTURE"
 
 cd ../../ffmpeg-src
 
-PKG_CONFIG_PATH=/usr/lib/x86_64-w64-mingw32/lib/pkgconfig:/usr/lib/i686-w64-mingw32/lib/pkgconfig ./configure "${FFMPEG_CONFIGURE_ARGS[@]}"
+PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig:/usr/i686-w64-mingw32/lib/pkgconfig ./configure "${FFMPEG_CONFIGURE_ARGS[@]}"
 
 make
 make DESTDIR="$BUILD_DIRECTORY" install

@@ -7,15 +7,15 @@ build_dav1d() {
     x64)
       DAV1D_MESON_ARGS+=(
         --cross-file=./package/crossfiles/x86_64-w64-mingw32.meson
-        --prefix=/usr/lib/x86_64-w64-mingw32
-        --libdir=/usr/lib/x86_64-w64-mingw32/lib
+        --prefix=/usr/x86_64-w64-mingw32
+        --libdir=/usr/x86_64-w64-mingw32/lib
       )
       ;;
     x86)
       DAV1D_MESON_ARGS+=(
         --cross-file=./package/crossfiles/i686-w64-mingw32.meson
-        --prefix=/usr/lib/i686-w64-mingw32
-        --libdir=/usr/lib/i686-w64-mingw32/lib
+        --prefix=/usr/i686-w64-mingw32
+        --libdir=/usr/i686-w64-mingw32/lib
       )
       ;;
     *)
