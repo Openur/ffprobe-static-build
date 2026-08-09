@@ -61,6 +61,12 @@
       <Pack>true</Pack>
     </Content>
 
+    <Content Include="$(MSBuildThisFileDirectory)build\win-arm64\ffprobe.exe" Condition="Exists('$(MSBuildThisFileDirectory)build\win-arm64\ffprobe.exe')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>runtimes/win-arm64/native/</PackagePath>
+      <Pack>true</Pack>
+    </Content>
+
     <Content Include="$(MSBuildThisFileDirectory)build\win-x64\ffprobe.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>runtimes/win-x64/native/</PackagePath>

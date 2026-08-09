@@ -4,11 +4,14 @@ set -ex
 
 build_dav1d() {
   case "$ARCHITECTURE" in
+    arm64)
+      DAV1D_MESON_ARGS+=(
+        --prefix=${MINGW_PREFIX:-/clangarm64}
+      )
+      ;;
     x64)
       DAV1D_MESON_ARGS+=(
-        --cross-file=./package/crossfiles/x86_64-w64-mingw32.meson
-        --prefix=/usr/x86_64-w64-mingw32
-        --libdir=/usr/x86_64-w64-mingw32/lib
+        --prefix=${MINGW_PREFIX:-/clang64}
       )
       ;;
     x86)

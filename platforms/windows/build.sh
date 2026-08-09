@@ -23,12 +23,22 @@ FFMPEG_CONFIGURE_ARGS+=(
 )
 
 case "$ARCHITECTURE" in
-  x64)
+  arm64)
+    export CMAKE_POLICY_VERSION_MINIMUM="3.5"
+
     FFMPEG_CONFIGURE_ARGS+=(
-      --ld="x86_64-w64-mingw32-g++"
+      --cc=clang
+      --cxx=clang++
+      --arch=arm64
+    )
+    ;;
+  x64)
+    export CMAKE_POLICY_VERSION_MINIMUM="3.5"
+
+    FFMPEG_CONFIGURE_ARGS+=(
+      --cc=clang
+      --cxx=clang++
       --arch=x86_64
-      --enable-cross-compile
-      --cross-prefix=x86_64-w64-mingw32-
     )
     ;;
   x86)
@@ -49,7 +59,7 @@ build_dav1d "$ARCHITECTURE"
 
 cd ../../ffmpeg-src
 
-PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig:/usr/i686-w64-mingw32/lib/pkgconfig ./configure "${FFMPEG_CONFIGURE_ARGS[@]}"
+PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig:/usr/i686-w64-mingw32/lib/pkgconfig:${MINGW_PREFIX:-/clang64}/lib64/pkgconfig ./configure "${FFMPEG_CONFIGURE_ARGS[@]}"
 
 make -j$(nproc) V=1
 make DESTDIR="$BUILD_DIRECTORY" install

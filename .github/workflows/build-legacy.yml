@@ -100,13 +100,17 @@ jobs:
           if-no-files-found: error
 
   build_windows:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         architecture:
-          - x64
           - x86
+        include:
+          - architecture: x64
+            os: windows-latest
+            msystem: CLANG64
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -127,13 +131,43 @@ jobs:
           git apply --stat --apply ../patches/v5.1_detect_truehd_atmos.patch
           git apply --stat --apply ../patches/v5.1_detect_eac3_atmos.patch
 
-      - name: Build
+      - name: Build (gcc)
         uses: docker://mirror.gcr.io/debian:11
+        if: runner.os == 'Linux'
         with:
           args: /bin/sh -c "apt-get update && apt-get upgrade --yes && apt-get install --yes --no-install-suggests --no-install-recommends ca-certificates wget build-essential cmake pkg-config gcc-mingw-w64 g++-mingw-w64 meson ninja-build nasm && platforms/windows/build.sh ${{ matrix.architecture }}"
 
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2.32.0
+        if: runner.os == 'Windows'
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: >-
+            wget
+            make
+            pkgconf
+            diffutils
+          pacboy: >-
+            clang:p
+            cmake:p
+            meson:p
+            ninja:p
+            nasm:p
+
+      - name: Build (clang)
+        if: runner.os == 'Windows'
+        run: msys2 -c 'platforms/windows/build.sh ${{ matrix.architecture }}'
+
       - name: List artifacts
         run: file platforms/*/build/opt/ffmpeg/bin/*
+
+      - name: Display build information
+        if: runner.os == 'Windows'
+        run: |
+          platforms/windows/build/opt/ffmpeg/bin/ffprobe.exe -hide_banner -version
+          platforms/windows/build/opt/ffmpeg/bin/ffprobe.exe -hide_banner -buildconf
+          platforms/windows/build/opt/ffmpeg/bin/ffprobe.exe -hide_banner -bsfs
 
       - name: Prepare build artifact
         run: mkdir -p build/win-${{ matrix.architecture }} && cp platforms/windows/build/opt/ffmpeg/bin/ffprobe.exe build/win-${{ matrix.architecture }}/
@@ -178,6 +212,8 @@ jobs:
           release: 13.5
           usesh: true
           arch: ${{ matrix.architecture == 'arm64' && 'aarch64' || 'x86_64' }}
+          envs: >-
+            FFMPEG_VERSION
           prepare: |
             pkg install -y bash gmake pkgconf nasm meson
           run: |
