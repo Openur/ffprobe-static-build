@@ -37,6 +37,12 @@ export FFMPEG_CONFIGURE_ARGS=(
   --enable-libdav1d
 )
 
+if [[ -z "${FFMPEG_VERSION:-}" || ! "${FFMPEG_VERSION:-}" =~ ^n5\. ]]; then
+  FFMPEG_CONFIGURE_ARGS+=(
+    --disable-unstable
+  )
+fi
+
 export DAV1D_MESON_ARGS=(
   --buildtype release
   --default-library=static
