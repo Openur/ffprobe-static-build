@@ -7,11 +7,13 @@ on:
       - main
     paths:
       - ".github/workflows/build-legacy.yml"
+      - "platforms/defaults.sh"
   pull_request:
     branches:
       - main
     paths:
       - ".github/workflows/build-legacy.yml"
+      - "platforms/defaults.sh"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name == 'workflow_dispatch' }}
