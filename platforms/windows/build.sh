@@ -51,7 +51,7 @@ cd ../../ffmpeg-src
 
 PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig:/usr/i686-w64-mingw32/lib/pkgconfig ./configure "${FFMPEG_CONFIGURE_ARGS[@]}"
 
-make
+make -j$(nproc) V=1
 make DESTDIR="$BUILD_DIRECTORY" install
 
 popd

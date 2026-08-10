@@ -47,7 +47,7 @@ cd ../../ffmpeg-src
 
 ./configure "${FFMPEG_CONFIGURE_ARGS[@]}"
 
-gmake
+gmake V=1
 gmake DESTDIR="$BUILD_DIRECTORY" install
 
 popd
