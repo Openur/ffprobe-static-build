@@ -7,17 +7,11 @@ on:
       - main
     paths:
       - ".github/workflows/build-legacy.yml"
-      - "platforms/**"
-      - "**.props"
-      - "**.csproj"
   pull_request:
     branches:
       - main
     paths:
       - ".github/workflows/build-legacy.yml"
-      - "platforms/**"
-      - "**.props"
-      - "**.csproj"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name == 'workflow_dispatch' }}
