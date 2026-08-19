@@ -105,6 +105,55 @@ jobs:
           path: build
           if-no-files-found: error
 
+  build_linux_musl:
+    runs-on: ${{ startsWith(matrix.architecture, 'arm') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture:
+          - arm64
+          - x64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Checkout FFmpeg
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ffmpeg/ffmpeg
+          ref: ${{ env.FFMPEG_VERSION }}
+          path: ffmpeg-src
+
+      - name: Apply patches
+        working-directory: ffmpeg-src
+        run: |
+          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
+          git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
+
+      - name: Build
+        uses: docker://mirror.gcr.io/alpine:3.24.1
+        with:
+          args: /bin/sh -c "apk add -U --no-cache bash curl xz alpine-sdk make meson nasm && ./platforms/linux-musl/build.sh ${{ matrix.architecture }}"
+
+      - name: List artifacts
+        run: file platforms/*/build/opt/ffmpeg/bin/*
+
+      - name: Display build information
+        run: |
+          platforms/linux-musl/build/opt/ffmpeg/bin/ffprobe -hide_banner -version
+          platforms/linux-musl/build/opt/ffmpeg/bin/ffprobe -hide_banner -buildconf
+          platforms/linux-musl/build/opt/ffmpeg/bin/ffprobe -hide_banner -bsfs
+
+      - name: Prepare build artifact
+        run: mkdir -p build/linux-musl-${{ matrix.architecture }} && cp platforms/linux-musl/build/opt/ffmpeg/bin/ffprobe build/linux-musl-${{ matrix.architecture }}/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: build-linux-musl-${{ matrix.architecture }}
+          path: build
+          if-no-files-found: error
+
   build_windows:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -286,11 +335,11 @@ jobs:
 
       - name: Display build information
         run: |
-          otool -L platforms/osx/build/opt/ffmpeg/bin/ffprobe
-          otool -l platforms/osx/build/opt/ffmpeg/bin/ffprobe
           platforms/osx/build/opt/ffmpeg/bin/ffprobe -hide_banner -version
           platforms/osx/build/opt/ffmpeg/bin/ffprobe -hide_banner -buildconf
           platforms/osx/build/opt/ffmpeg/bin/ffprobe -hide_banner -bsfs
+          otool -L platforms/osx/build/opt/ffmpeg/bin/ffprobe
+          otool -l platforms/osx/build/opt/ffmpeg/bin/ffprobe
 
       - name: Prepare build artifact
         run: mkdir -p build/osx-${{ matrix.architecture }} && cp platforms/osx/build/opt/ffmpeg/bin/ffprobe build/osx-${{ matrix.architecture }}/
@@ -305,8 +354,9 @@ jobs:
   package:
     needs:
       - prepare
-      - build_freebsd
       - build_linux
+      - build_linux_musl
+      - build_freebsd
       - build_mac
       - build_windows
     runs-on: ubuntu-latest
@@ -334,8 +384,7 @@ jobs:
         run: ls -lR build
 
       - name: Package
-        shell: bash
-        run: dotnet pack -c Release -v detailed -p:Version=${{ needs.prepare.outputs.semver }}.${{ github.run_number }}
+        run: dotnet pack -c Release -p:Version=${{ needs.prepare.outputs.semver }}.${{ github.run_number }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -387,7 +436,7 @@ jobs:
             artifacts/ffprobe.*
           artifactErrorsFailBuild: true
           draft: false
-          generateReleaseNotes: false
+          generateReleaseNotes: true
           skipIfReleaseExists: true
           immutableCreate: true
           name: v${{ needs.prepare.outputs.semver }} (build ${{ github.run_number }})
@@ -409,7 +458,9 @@ jobs:
       - name: Push to GitHub
         shell: bash
         run: >-
-          dotnet nuget push
+          dotnet
+          nuget
+          push
           packages/Openur.FFprobeStatic.*.nupkg
           --no-symbols
           --skip-duplicate
@@ -425,7 +476,9 @@ jobs:
       - name: Push to NuGet
         shell: bash
         run: >-
-          dotnet nuget push
+          dotnet
+          nuget
+          push
           packages/Openur.FFprobeStatic.*.nupkg
           --no-symbols
           --skip-duplicate
