@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 
-export MAKEFLAGS=-j6
+# renovate: datasource=gitlab-releases depName=videolan/dav1d versioning=semver registryUrl=https://code.videolan.org
+export DAV1D_VERSION=1.5.4
 
-export FFMPEG_CONFIGURE_ARGS=(
+FFMPEG_CONFIGURE_ARGS=(
   --extra-version=Openur
 
   --prefix=/opt/ffmpeg
 
   --enable-version3
+
+  --enable-static
+  --disable-shared
+  --enable-pic
 
   --disable-programs
   --disable-everything
@@ -30,9 +35,6 @@ export FFMPEG_CONFIGURE_ARGS=(
   --enable-bsf=av1_frame_merge
   --enable-bsf=av1_metadata
 
-  --enable-static
-  --disable-shared
-
   # AV1
   --enable-libdav1d
 )
@@ -43,7 +45,7 @@ if [[ -z "${FFMPEG_VERSION:-}" || ! "${FFMPEG_VERSION:-}" =~ ^n5\. ]]; then
   )
 fi
 
-export DAV1D_MESON_ARGS=(
+DAV1D_MESON_ARGS=(
   --buildtype release
   --default-library=static
   -Denable_tools=false
@@ -53,5 +55,4 @@ export DAV1D_MESON_ARGS=(
   -Dxxhash_muxer=disabled
 )
 
-# renovate: datasource=gitlab-releases depName=videolan/dav1d versioning=semver registryUrl=https://code.videolan.org
-export DAV1D_VERSION=1.5.4
+export MAKEFLAGS=-j6

@@ -3,6 +3,8 @@
 set -ex
 
 build_dav1d() {
+  : ${DAV1D_VERSION?}
+
   case "$ARCHITECTURE" in
     arm64)
       DAV1D_MESON_ARGS+=(

@@ -11,8 +11,10 @@ BUILD_DIRECTORY="$SCRIPT_DIRECTORY/build"
 
 pushd "$SCRIPT_DIRECTORY"
 
-source ../defaults.sh
+source ../common.sh
 source ./build-deps.sh
+
+: ${FFMPEG_VERSION?}
 
 FFMPEG_CONFIGURE_ARGS+=(
   --pkg-config-flags="--static"
