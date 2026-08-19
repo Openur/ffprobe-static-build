@@ -46,8 +46,6 @@ case "$ARCHITECTURE" in
     ;;
 esac
 
-brew install meson nasm
-
 build_dav1d "$ARCHITECTURE"
 
 cd ../../ffmpeg-src

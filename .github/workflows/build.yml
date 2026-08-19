@@ -272,6 +272,11 @@ jobs:
           git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
           git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
 
+      - name: Install dependencies
+        run: |
+          brew trust aws/tap
+          brew install meson nasm
+
       - name: Build
         shell: bash
         run: ./platforms/osx/build.sh ${{ matrix.architecture }}
