@@ -206,12 +206,19 @@ jobs:
           git apply --stat --apply ../patches/v5.1_detect_truehd_atmos.patch
           git apply --stat --apply ../patches/v5.1_detect_eac3_atmos.patch
 
+      - name: Get processor count
+        id: nproc
+        run: |
+          PROCESSOR_COUNT=$(nproc)
+          echo "PROCESSOR_COUNT=${PROCESSOR_COUNT}" >> "${GITHUB_OUTPUT}"
+
       - name: Build
         uses: vmactions/freebsd-vm@83b151f58c6047089f4c80eb5ba2039d158ce093 # v1.5.3
         with:
           release: 13.5
           usesh: true
           arch: ${{ matrix.architecture == 'arm64' && 'aarch64' || 'x86_64' }}
+          cpu: ${{ steps.nproc.outputs.PROCESSOR_COUNT }}
           envs: >-
             FFMPEG_VERSION
           prepare: |
@@ -219,9 +226,12 @@ jobs:
           run: |
             ./platforms/freebsd/build.sh ${{ matrix.architecture }}
 
-            ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -version
-            ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -buildconf
-            ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -bsfs
+      - name: Display build information
+        shell: freebsd {0}
+        run: |
+          ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -version
+          ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -buildconf
+          ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -bsfs
 
       - name: List artifacts
         run: file platforms/*/build/opt/ffmpeg/bin/*

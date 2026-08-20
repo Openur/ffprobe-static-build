@@ -32,7 +32,7 @@ build_dav1d() {
   wget -qO- https://download.videolan.org/videolan/dav1d/${DAV1D_VERSION}/dav1d-${DAV1D_VERSION}.tar.xz | tar xJ -C "${BUILD_DIRECTORY}/dav1d" --strip-components=1
   pushd "${BUILD_DIRECTORY}"/dav1d
   meson setup build . "${DAV1D_MESON_ARGS[@]}"
-  meson compile -C build --verbose
+  meson compile -C build -j$(nproc) --verbose
   meson install -C build
   rm -rf "${BUILD_DIRECTORY}"/dav1d
   popd

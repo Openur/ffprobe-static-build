@@ -262,6 +262,13 @@ jobs:
           git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
           git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
 
+      - name: Get processor count
+        if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
+        id: nproc
+        run: |
+          PROCESSOR_COUNT=$(nproc)
+          echo "PROCESSOR_COUNT=${PROCESSOR_COUNT}" >> "${GITHUB_OUTPUT}"
+
       - name: Build
         uses: vmactions/freebsd-vm@83b151f58c6047089f4c80eb5ba2039d158ce093 # v1.5.3
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
@@ -269,6 +276,7 @@ jobs:
           release: 14.4
           usesh: true
           arch: ${{ matrix.architecture == 'arm64' && 'aarch64' || 'x86_64' }}
+          cpu: ${{ steps.nproc.outputs.PROCESSOR_COUNT }}
           envs: >-
             FFMPEG_VERSION
           prepare: |
@@ -276,17 +284,21 @@ jobs:
           run: |
             ./platforms/freebsd/build.sh ${{ matrix.architecture }}
 
-            ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -version
-            ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -buildconf
-            ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -bsfs
+      - name: Display build information
+        if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
+        shell: freebsd {0}
+        run: |
+          ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -version
+          ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -buildconf
+          ./platforms/freebsd/build/opt/ffmpeg/bin/ffprobe -hide_banner -bsfs
 
       - name: List artifacts
-        run: file platforms/*/build/opt/ffmpeg/bin/*
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
+        run: file platforms/*/build/opt/ffmpeg/bin/*
 
       - name: Prepare build artifact
-        run: mkdir -p build/freebsd-${{ matrix.architecture }} && cp platforms/freebsd/build/opt/ffmpeg/bin/ffprobe build/freebsd-${{ matrix.architecture }}/
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
+        run: mkdir -p build/freebsd-${{ matrix.architecture }} && cp platforms/freebsd/build/opt/ffmpeg/bin/ffprobe build/freebsd-${{ matrix.architecture }}/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

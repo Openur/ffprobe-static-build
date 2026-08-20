@@ -53,7 +53,7 @@ cd ../../ffmpeg-src
 PKG_CONFIG_PATH="$BUILD_DIRECTORY/x86_64-apple-darwin/lib/pkgconfig:/usr/local/lib/pkgconfig" \
   ./configure "${FFMPEG_CONFIGURE_ARGS[@]}"
 
-make V=1
+make -j$(sysctl -n hw.logicalcpu || echo 6) V=1
 make DESTDIR="$BUILD_DIRECTORY" install
 
 popd
