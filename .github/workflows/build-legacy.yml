@@ -74,7 +74,7 @@ jobs:
           git apply --stat --apply ../patches/v5.1_detect_eac3_atmos.patch
 
       - name: Build
-        uses: docker://mirror.gcr.io/debian:11
+        uses: docker://mirror.gcr.io/debian:12
         env:
           LINUX_COMPILER_SUFFIX: "-10"
         with:
@@ -184,7 +184,7 @@ jobs:
           git apply --stat --apply ../patches/v5.1_detect_eac3_atmos.patch
 
       - name: Build (gcc)
-        uses: docker://mirror.gcr.io/debian:11
+        uses: docker://mirror.gcr.io/debian:12
         if: runner.os == 'Linux'
         with:
           args: /bin/sh -c "apt-get update && apt-get upgrade --yes && apt-get install --yes --no-install-suggests --no-install-recommends ca-certificates wget build-essential cmake pkg-config gcc-mingw-w64 g++-mingw-w64 meson ninja-build nasm && platforms/windows/build.sh ${{ matrix.architecture }}"
