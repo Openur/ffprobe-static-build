@@ -147,7 +147,7 @@
       matchDatasources: ["docker"],
       matchFileNames: [".github/workflows/build-legacy.yml"],
       matchPackageNames: ["/debian/"],
-      allowedVersions: "==11",
+      allowedVersions: "==12",
     },
     {
       matchDatasources: ["github-runners"],
