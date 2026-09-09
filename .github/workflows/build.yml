@@ -273,7 +273,7 @@ jobs:
         uses: vmactions/freebsd-vm@8b0f1a8fc0ea0def307835c258940ca358fe6480 # v1.5.6
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
         with:
-          release: 14.4
+          release: 14.5
           usesh: true
           arch: ${{ matrix.architecture == 'arm64' && 'aarch64' || 'x86_64' }}
           cpu: ${{ steps.nproc.outputs.PROCESSOR_COUNT }}
