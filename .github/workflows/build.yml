@@ -131,7 +131,7 @@ jobs:
           git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
 
       - name: Build
-        uses: docker://mirror.gcr.io/alpine:3.24.1
+        uses: docker://mirror.gcr.io/alpine:3.24.2
         with:
           args: /bin/sh -c "apk add -U --no-cache bash curl xz alpine-sdk make meson nasm && ./platforms/linux-musl/build.sh ${{ matrix.architecture }}"
 
