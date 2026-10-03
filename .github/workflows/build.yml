@@ -270,7 +270,7 @@ jobs:
           echo "PROCESSOR_COUNT=${PROCESSOR_COUNT}" >> "${GITHUB_OUTPUT}"
 
       - name: Build
-        uses: vmactions/freebsd-vm@a2f9a41fa97f6848b8c3b791087dfcdaa5b473ff # v1.5.8
+        uses: vmactions/freebsd-vm@c46abacb49f09938ca4e1702d15d836285d694cc # v1.5.9
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
         with:
           release: 14.5
