@@ -99,7 +99,7 @@ jobs:
         run: mkdir -p build/linux-${{ matrix.architecture }} && cp platforms/linux/build/opt/ffmpeg/bin/ffprobe build/linux-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: build-linux-${{ matrix.architecture }}
           path: build
@@ -148,7 +148,7 @@ jobs:
         run: mkdir -p build/linux-musl-${{ matrix.architecture }} && cp platforms/linux-musl/build/opt/ffmpeg/bin/ffprobe build/linux-musl-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: build-linux-musl-${{ matrix.architecture }}
           path: build
@@ -228,7 +228,7 @@ jobs:
         run: mkdir -p build/win-${{ matrix.architecture }} && cp platforms/windows/build/opt/ffmpeg/bin/ffprobe.exe build/win-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: build-win-${{ matrix.architecture }}
           path: build
@@ -301,7 +301,7 @@ jobs:
         run: mkdir -p build/freebsd-${{ matrix.architecture }} && cp platforms/freebsd/build/opt/ffmpeg/bin/ffprobe build/freebsd-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
         with:
           name: build-freebsd-${{ matrix.architecture }}
@@ -357,7 +357,7 @@ jobs:
         run: mkdir -p build/osx-${{ matrix.architecture }} && cp platforms/osx/build/opt/ffmpeg/bin/ffprobe build/osx-${{ matrix.architecture }}/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: build-osx-${{ matrix.architecture }}
           path: build
@@ -386,7 +386,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Download artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: build-*
           path: build
@@ -399,7 +399,7 @@ jobs:
         run: dotnet pack -c Release -p:Version=${{ needs.prepare.outputs.semver }}.${{ github.run_number }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: packages
           path: artifacts/package/release/Openur.FFprobeStatic.*.nupkg
@@ -415,13 +415,13 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main' && inputs.build_freebsd_arm
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: packages
           path: packages
 
       - name: Download artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: build-*
           path: build
@@ -462,7 +462,7 @@ jobs:
       packages: write
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: packages
           path: packages
