@@ -267,7 +267,7 @@ jobs:
       - name: Build
         uses: vmactions/freebsd-vm@c46abacb49f09938ca4e1702d15d836285d694cc # v1.5.9
         with:
-          release: 13.5
+          release: 14.5
           usesh: true
           arch: ${{ matrix.architecture == 'arm64' && 'aarch64' || 'x86_64' }}
           cpu: ${{ steps.nproc.outputs.PROCESSOR_COUNT }}
