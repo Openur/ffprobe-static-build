@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM mirror.gcr.io/debian:13.7@sha256:8c4733a92aacd0bcff3779eadc35a4a5147f36cb20a5fcb56504cbc740212259
+FROM mirror.gcr.io/debian:13.7@sha256:2dc419c6d7fe3dad0a2f9fd469c34cc90b0f9ba642d8fde837fe3d7d34a0e7f1
 
 RUN export DEBIAN_FRONTEND="noninteractive"; \
     set -eux; \
