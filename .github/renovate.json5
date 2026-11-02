@@ -160,7 +160,7 @@
       matchFileNames: [".github/workflows/build-legacy.yml"],
       matchDepTypes: ["github-runner"],
       matchPackageNames: ["macos"],
-      allowedVersions: "==14",
+      allowedVersions: "==15",
     },
   ]
 }
