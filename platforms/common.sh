@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # renovate: datasource=gitlab-releases depName=videolan/dav1d versioning=semver registryUrl=https://code.videolan.org
-export DAV1D_VERSION=1.5.4
+export DAV1D_VERSION=1.5.5
 
 FFMPEG_CONFIGURE_ARGS=(
   --extra-version=Openur
