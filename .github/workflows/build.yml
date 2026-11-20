@@ -31,7 +31,7 @@ concurrency:
 
 env:
   # renovate: datasource=github-tags depName=ffmpeg/ffmpeg
-  FFMPEG_VERSION: n9.0.2
+  FFMPEG_VERSION: n9.1
 
 permissions:
   contents: read
@@ -78,8 +78,8 @@ jobs:
       - name: Apply patches
         working-directory: ffmpeg-src
         run: |
-          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
-          git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
+          git apply --stat --apply ../patches/v9.1_dts_es_audio.patch
+          git apply --stat --apply ../patches/v9.1_x2645_codec_tag.patch
 
       - name: Build
         uses: docker://ghcr.io/openur/ffmpeg-builder:linux
@@ -127,8 +127,8 @@ jobs:
       - name: Apply patches
         working-directory: ffmpeg-src
         run: |
-          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
-          git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
+          git apply --stat --apply ../patches/v9.1_dts_es_audio.patch
+          git apply --stat --apply ../patches/v9.1_x2645_codec_tag.patch
 
       - name: Build
         uses: docker://mirror.gcr.io/alpine:3.24.4
@@ -183,8 +183,8 @@ jobs:
       - name: Apply patches
         working-directory: ffmpeg-src
         run: |
-          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
-          git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
+          git apply --stat --apply ../patches/v9.1_dts_es_audio.patch
+          git apply --stat --apply ../patches/v9.1_x2645_codec_tag.patch
 
       - name: Build (gcc)
         uses: docker://ghcr.io/openur/ffmpeg-builder:windows
@@ -259,8 +259,8 @@ jobs:
         working-directory: ffmpeg-src
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
         run: |
-          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
-          git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
+          git apply --stat --apply ../patches/v9.1_dts_es_audio.patch
+          git apply --stat --apply ../patches/v9.1_x2645_codec_tag.patch
 
       - name: Get processor count
         if: ${{ !startsWith(matrix.architecture, 'arm') || inputs.build_freebsd_arm }}
@@ -330,8 +330,8 @@ jobs:
       - name: Apply patches
         working-directory: ffmpeg-src
         run: |
-          git apply --stat --apply ../patches/v8.0_dts_es_audio.patch
-          git apply --stat --apply ../patches/v8.0_x2645_codec_tag.patch
+          git apply --stat --apply ../patches/v9.1_dts_es_audio.patch
+          git apply --stat --apply ../patches/v9.1_x2645_codec_tag.patch
 
       - name: Install dependencies
         run: |
